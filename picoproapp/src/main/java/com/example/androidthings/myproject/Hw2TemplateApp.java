@@ -68,70 +68,89 @@ public class Hw2TemplateApp extends SimplePicoPro {
     @Override
     void digitalEdgeEvent(Gpio pin, boolean value) {
         println("digitalEdgeEvent"+pin+", "+value);
+        if(buttonsEnabled == true) {
+            //a button is being pressed down -- disable all other buttons
+            buttonsEnabled = false;
 
-        if(pin == leftButton && value == LOW) {
-            //check if can move that direction
-            if(selectedCol-1 < 0) {
-                //can't move
-                return;
+            if(pin == leftButton && value == LOW) {
+                //check if can move that direction
+                if(selectedCol-1 < 0) {
+                    //can't move
+                    return;
+                }
+                //can move
+                else {
+                    //increment row to the right by one
+                    selectedCol -= 1;
+                }
             }
-            //can move
-            else {
-                //increment row to the right by one
-                selectedCol -= 1;
+            else if (pin == upButton && value == LOW) {
+                //check if can move that direction
+                if(selectedRow-1 < 0) {
+                    //can't move
+                    return;
+                }
+                //can move
+                else {
+                    //increment row to the right by one
+                    selectedRow -= 1;
+                }
+            }
+            else if (pin == rightButton && value == LOW) {
+                //check if can move that direction
+                if(selectedCol+1 >= lowercaseAlpha[0].length) {
+                    //can't move
+                    return;
+                }
+                //can move
+                else {
+                    //increment row to the right by one
+                    selectedCol += 1;
+                }
+            }
+            else if (pin == downButton && value == LOW) {
+                //check if can move that direction
+                if(selectedRow+1 >= lowercaseAlpha.length) {
+                    //can't move
+                    return;
+                }
+                //can move
+                else {
+                    //increment row to the right by one
+                    selectedRow += 1;
+                }
+            }
+            else if (pin == enterButton && value == LOW) {
+                //check if shift or backspace character was clicked
+                if(uppercaseAlpha[selectedRow][selectedCol] == '<'){
+                    //backspace clicked -- remove last character
+                    backspace();
+                }
+                else if(uppercaseAlpha[selectedRow][selectedCol] == '^'){
+                    //shift clicked
+                    shift = true;
+                }
+                //text entry clicked
+                else {
+                    if(shift == true) {
+                        userInput += Character.toString(uppercaseAlpha[selectedRow][selectedCol]);
+                    }
+                    else {
+                        userInput += Character.toString(lowercaseAlpha[selectedRow][selectedCol]);
+                    }
+                }
+            }
+            else if (pin == spaceButton && value == LOW) {
+                userInput += " ";
+            }
+        }
 
-            }
+        //button being released using a pull-up resistor
+        else if(value == HIGH) {
+            //other buttons can now be clicked
+            buttonsEnabled = true;
         }
-        else if (pin == upButton && value == LOW) {
-            //check if can move that direction
-            if(selectedRow-1 < 0) {
-                //can't move
-                return;
-            }
-            //can move
-            else {
-                //increment row to the right by one
-                selectedRow -= 1;
 
-            }
-        }
-        else if (pin == rightButton && value == LOW) {
-            //check if can move that direction
-            if(selectedCol+1 >= lowercaseAlpha[0].length) {
-                //can't move
-                return;
-            }
-            //can move
-            else {
-                //increment row to the right by one
-                selectedCol += 1;
-
-            }
-        }
-        else if (pin == downButton && value == LOW) {
-            //check if can move that direction
-            if(selectedRow+1 >= lowercaseAlpha.length) {
-                //can't move
-                return;
-            }
-            //can move
-            else {
-                //increment row to the right by one
-                selectedRow += 1;
-
-            }
-        }
-        else if (pin == enterButton && value == LOW) {
-            if(shift == true) {
-                userInput += Character.toString(uppercaseAlpha[selectedRow][selectedCol]);
-            }
-            else {
-                userInput += Character.toString(lowercaseAlpha[selectedRow][selectedCol]);
-            }
-        }
-        else if (pin == spaceButton && value == LOW) {
-            userInput += " ";
-        }
 
         //print out the keyboard after changes
         printKeyboardAndText();
@@ -200,22 +219,13 @@ public class Hw2TemplateApp extends SimplePicoPro {
     }
 
     /**
-     * Backspaces a character and then reprints the result to the screen
+     * Backspaces a character from the user input
      */
     public void backspace() {
         //make sure there is a character to delete
         if (userInput.length() >= 1) {
             userInput = userInput.substring(0, userInput.length()-2);
         }
-
-        //print the new result
-        printKeyboardAndText();
     }
 
-    /**
-     *
-     */
-    public void shiftCharacters() {
-
-    }
 }
