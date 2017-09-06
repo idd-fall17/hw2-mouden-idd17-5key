@@ -135,6 +135,7 @@ public abstract class SimplePicoPro extends SimpleBoard {
         EditText editText;
         editText = (EditText) activity.findViewById(R.id.editText);
 
+
         if(editText != null) {
             editText.getText().append(c);
         } else {
