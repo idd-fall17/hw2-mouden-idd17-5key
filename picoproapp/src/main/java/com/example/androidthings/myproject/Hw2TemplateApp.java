@@ -5,17 +5,20 @@ import com.google.android.things.pio.Gpio;
 /**
  * Template for IDD Fall 2017 HW2 (text entry device)
  * Created by bjoern on 9/5/17.
+ *
+ * Project code for IDD Fall 2017 HW2
+ * Created by Michael Oudenhoven on 9/6/17
  */
 
 public class Hw2TemplateApp extends SimplePicoPro {
 
     //button pin numbers
-    Gpio leftButton = GPIO_128;
-    Gpio upButton = GPIO_39;
-    Gpio rightButton = GPIO_37;
-    Gpio downButton = GPIO_35;
-    Gpio spaceButton = GPIO_34;
-    Gpio enterButton = GPIO_33;
+    private Gpio leftButton = GPIO_128;
+    private Gpio upButton = GPIO_39;
+    private Gpio rightButton = GPIO_37;
+    private Gpio downButton = GPIO_35;
+    private Gpio spaceButton = GPIO_34;
+    private Gpio enterButton = GPIO_33;
 
     //2D alphabet array
     private char[][] lowercaseAlpha = {{'a', 'b', 'c', 'd', 'e', 'f', '<'}, {'g', 'h', 'i', 'j', 'k', 'l', '^'}, {'m', 'n', 'o', 'p', 'q', 'r', 's'}, {'t', 'u', 'v', 'w', 'x', 'y', 'z'}};
@@ -33,6 +36,7 @@ public class Hw2TemplateApp extends SimplePicoPro {
 
     //boolean to know wheter or not a button click should be allowed
     private boolean buttonsEnabled = true;
+    private Gpio buttonCurrPressed = null;
 
 
     @Override
@@ -45,33 +49,42 @@ public class Hw2TemplateApp extends SimplePicoPro {
         pinMode(spaceButton, Gpio.DIRECTION_IN);
         pinMode(enterButton, Gpio.DIRECTION_IN);
 
-        //set up edge triggers
-        setEdgeTrigger(leftButton, Gpio.EDGE_BOTH);
-        setEdgeTrigger(upButton, Gpio.EDGE_BOTH);
-        setEdgeTrigger(rightButton, Gpio.EDGE_BOTH);
-        setEdgeTrigger(downButton, Gpio.EDGE_BOTH);
-        setEdgeTrigger(spaceButton, Gpio.EDGE_BOTH);
-        setEdgeTrigger(enterButton, Gpio.EDGE_BOTH);
+        //set up edge triggers -- only rising, falling taken care of by loop
+        setEdgeTrigger(leftButton, Gpio.EDGE_FALLING);
+        setEdgeTrigger(upButton, Gpio.EDGE_FALLING);
+        setEdgeTrigger(rightButton, Gpio.EDGE_FALLING);
+        setEdgeTrigger(downButton, Gpio.EDGE_FALLING);
+        setEdgeTrigger(spaceButton, Gpio.EDGE_FALLING);
+        setEdgeTrigger(enterButton, Gpio.EDGE_FALLING);
 
-        //printStringToScreen("hello world\nhello world\nhello world\nhello world\nhello world\nhello world");
         //print out keyboard and initial empty text
         printKeyboardAndText();
-
     }
 
     @Override
     public void loop() {
-        //nothing to do here
+        //use the loop to detect buttons pressed down or not pressed down
 
+        if (buttonCurrPressed != null){
+            if(digitalRead(buttonCurrPressed)== HIGH){
+                buttonsEnabled = true;
+                buttonCurrPressed = null;
+            }
+        }
     }
 
     @Override
     void digitalEdgeEvent(Gpio pin, boolean value) {
         println("digitalEdgeEvent"+pin+", "+value);
-        if(buttonsEnabled == true) {
+        if(buttonsEnabled) {
+            //button currently pressed when the buttons are enabled
+            buttonCurrPressed = pin;
+
             //a button is being pressed down -- disable all other buttons
             buttonsEnabled = false;
 
+            //if statements through all of the buttons to see which was pressed so the selected row
+            //and column can be updated
             if(pin == leftButton && value == LOW) {
                 //check if can move that direction
                 if(selectedCol-1 < 0) {
@@ -127,13 +140,20 @@ public class Hw2TemplateApp extends SimplePicoPro {
                     backspace();
                 }
                 else if(uppercaseAlpha[selectedRow][selectedCol] == '^'){
-                    //shift clicked
-                    shift = true;
+                    //shift clicked - toggle on and off
+                    if(!shift) {
+                        shift = true;
+                    }
+                    else {
+                        shift = false;
+                    }
                 }
                 //text entry clicked
                 else {
-                    if(shift == true) {
+                    if(shift) {
                         userInput += Character.toString(uppercaseAlpha[selectedRow][selectedCol]);
+                        //turn off shift
+                        shift = false;
                     }
                     else {
                         userInput += Character.toString(lowercaseAlpha[selectedRow][selectedCol]);
@@ -145,13 +165,6 @@ public class Hw2TemplateApp extends SimplePicoPro {
             }
         }
 
-        //button being released using a pull-up resistor
-        else if(value == HIGH) {
-            //other buttons can now be clicked
-            buttonsEnabled = true;
-        }
-
-
         //print out the keyboard after changes
         printKeyboardAndText();
 
@@ -162,7 +175,7 @@ public class Hw2TemplateApp extends SimplePicoPro {
      * Puts together a large string to print out to the screen that includes the currently
      * selected character and the string being typed out
      */
-    public void printKeyboardAndText() {
+    private void printKeyboardAndText() {
 
         //start with the user input and then two new new lines to get keyboard away from entry
         String toPrint = userInput + "\n" + "\n";
@@ -171,7 +184,7 @@ public class Hw2TemplateApp extends SimplePicoPro {
 
         for(int i=0; i<lowercaseAlpha.length; i++){
             for(int j=0; j<lowercaseAlpha[i].length; j++){
-                if(shift == false) {
+                if(!shift) {
                     char currChar = lowercaseAlpha[i][j];
 
                     //if it is the selected character put stars around it to show user
@@ -205,11 +218,6 @@ public class Hw2TemplateApp extends SimplePicoPro {
             keyboard += "\n";
         }
 
-        //turn shift off for next character if it was on
-        if(shift == true) {
-            shift = false;
-        }
-
         //add keyboard to current user input
         toPrint += keyboard;
 
@@ -221,10 +229,10 @@ public class Hw2TemplateApp extends SimplePicoPro {
     /**
      * Backspaces a character from the user input
      */
-    public void backspace() {
+    private void backspace() {
         //make sure there is a character to delete
         if (userInput.length() >= 1) {
-            userInput = userInput.substring(0, userInput.length()-2);
+            userInput = userInput.substring(0, userInput.length()-1);
         }
     }
 
