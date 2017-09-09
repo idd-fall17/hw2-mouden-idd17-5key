@@ -2,6 +2,7 @@ package com.example.androidthings.myproject;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.text.Html;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -153,7 +154,8 @@ public abstract class SimplePicoPro extends SimpleBoard {
         editText = (EditText) activity.findViewById(R.id.editText);
 
         if(editText != null) {
-            editText.getText().append(s);
+            //editText.getText().append(s);
+            editText.setText(Html.fromHtml(s, 0));
         } else {
             Log.e(TAG,"printString: Could not find R.id.editText");
         }

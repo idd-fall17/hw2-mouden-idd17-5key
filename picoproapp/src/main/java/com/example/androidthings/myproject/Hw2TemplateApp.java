@@ -174,29 +174,40 @@ public class Hw2TemplateApp extends SimplePicoPro {
 
     /**
      * Puts together a large string to print out to the screen that includes the currently
-     * selected character and the string being typed out
+     * selected character and the string being typed out. Uses HTML formatting to bold the character
+     * and for line breaks. The printStringToScreen() has been updated to print HTML strings
      */
     private void printKeyboardAndText() {
 
         //start with the user input and then two new new lines to get keyboard away from entry
-        String toPrint = userInput + "\n" + "\n";
+        String toPrint = userInput + "<br><br>";
 
         String keyboard = "";
 
         for(int i=0; i<lowercaseAlpha.length; i++){
+
+            String keyboardLine = "";
+
             for(int j=0; j<lowercaseAlpha[i].length; j++){
                 if(!shift) {
                     char currChar = lowercaseAlpha[i][j];
 
                     //if it is the selected character put stars around it to show user
                     if (i==selectedRow && j==selectedCol) {
-                        //add the character and a tab after to space out
-                        keyboard += "*" + Character.toString(currChar) + "*\t";
+                        //add the character and a tab after to space out -- special case for '<' due to html formatting
+                        if(currChar == '<'){
+                            String backspaceString = "<";
+                            keyboardLine += "<b><u><font color=\"red\">"+backspaceString+" </font></u></b>\t\t";
+                        }
+                        else {
+                            keyboardLine += "<b><u><font color=\"red\">" + Character.toString(currChar) + "</font></u></b>\t\t";
+                        }
+
                     }
                     //not selected character just add to keyboard
                     else {
                         //add the character and a tab after to space out
-                        keyboard += Character.toString(currChar) + "\t";
+                        keyboardLine += Character.toString(currChar) + "\t\t";
                     }
                 }
                 //shift on need uppercase
@@ -205,19 +216,27 @@ public class Hw2TemplateApp extends SimplePicoPro {
 
                     //if it is the selected character put stars around it to show user
                     if (i==selectedRow && j==selectedCol) {
-                        //add the character and a tab after to space out
-                        keyboard += "*" + Character.toString(currChar) + "*\t";
+                        //add the character and a tab after to space out -- special case for '<' due to html formatting
+                        if(currChar == '<'){
+                            String backspaceString = "<";
+                            keyboardLine += "<b><u><font color=\"red\">"+backspaceString+" </font></u></b>\t\t";
+                        }
+                        else {
+                            keyboardLine += "<b><u><font color=\"red\">" + Character.toString(currChar) + "</font></u></b>\t\t";
+                        }
                     }
                     //not selected character just add to keyboard
                     else {
                         //add the character and a tab after to space out
-                        keyboard += Character.toString(currChar) + "\t";
+                        keyboardLine += Character.toString(currChar) + "\t\t";
                     }
                 }
             }
             //add newline character after each row
-            keyboard += "\n";
+            keyboard += keyboardLine + "<br>";
         }
+
+
 
         //add keyboard to current user input
         toPrint += keyboard;
