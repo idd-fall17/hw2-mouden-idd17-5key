@@ -37,4 +37,5 @@ android {
 
 dependencies {
     provided 'com.google.android.things:androidthings:0.4-devpreview'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
