@@ -27,7 +27,7 @@ public class Hw2TemplateApp extends SimplePicoPro {
     //current character selected
     private int selectedRow = 0;
     private int selectedCol = 0;
-
+    
     //user text input
     private String userInput = "";
 
@@ -64,9 +64,10 @@ public class Hw2TemplateApp extends SimplePicoPro {
     @Override
     public void loop() {
         //use the loop to detect buttons pressed down or not pressed down
-
         if (buttonCurrPressed != null){
+            //check if button is released
             if(digitalRead(buttonCurrPressed)== HIGH){
+                //if the button is now released re-enable the buttons
                 buttonsEnabled = true;
                 buttonCurrPressed = null;
             }
