@@ -1,27 +1,7 @@
-Android Things empty project template
+HW2 - Text Entry Device
 =====================================
 
-Use this empty project as a template for your Android Things project.
-
-
-Pre-requisites
---------------
-
-- Android Things compatible board
-- Android Studio 2.2+
-
-
-Build and install
-=================
-
-On Android Studio, click on the "Run" button.
-
-If you prefer to run on the command line, type
-
-```bash
-./gradlew installDebug
-adb shell am start com.example.androidthings.myproject/.MainActivity
-```
+Submission for Interactive Device Design, Fall 2017, at the University of California Berkeley.
 
 License
 -------
