@@ -3,6 +3,10 @@ HW2 - Text Entry Device
 
 Submission for Interactive Device Design, Fall 2017, at the University of California Berkeley.
 
+[Technical Information Write Up] (https://drive.google.com/a/berkeley.edu/file/d/0B4gFHXEeWkebbFpFYjhFM0o1a2c/view?usp=sharing)
+[Demo Video] (https://drive.google.com/a/berkeley.edu/file/d/0B4gFHXEeWkebMmRyMGFjbTV2WGs/view?usp=sharing)
+
+
 License
 -------
 
